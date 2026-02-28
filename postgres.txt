@@ -1,0 +1,142 @@
+eine app ist geteilt in verschiedene Tables
+
+bspw: Users, Products, Purchases. alle tables haben eine Verbindung zueiander (relation), deshalb relational database
+
+purchases--> verbindung mit users table , welcher user hat ein purchase getätigt, und der purchase muss eine Liste von produkten haben aus dem products tables
+
+die verbindung von tables muss sich im vorfeld gut überlegt werden um eine effiziente datenbank zu designen
+
+für nh social media anwendungen braucht man beispielsweise eine user table und ein posts table, weil jeder user eine realtion zu posts hat
+
+columns: attribute (name, alter ...)
+rows: sind einträge in der datenbank
+
+
+postgres datentypen:
+
+Int, decimal, precision -----> entspricht int,float
+Varchar, text(string ohne limit)  -----> string
+boolean                 -----> boolean
+array                   -----> Liste
+
+Primary key ist notwendig um jeden eintrag in der datenbank eindeutig identifizieren zu können, dafür braucht man ein column wie Id, die einzigartig ist
+- muss aber nicht immer id heißen, kann auch beispielsweise email adresse sein bei einem user table
+
+
+Constraints
+-Unique constraints UNIQUE --> einschränkungen für datenbank einträge (UNIQUE), wenn man will das einträge einzigartig sind
+
+-Null Constraint    NOT NULL --> falls man einen neuen eintrag anlegen will wird standardmäßig null gespeichert wenn man nichts angib
+- um einträge zu verhindern , bei denen keine daten oder werte übergeben werden für ein column kann man NOT NULL festlegen
+
+#####################################################################################################################################
+
+man kann die reihenfolge con columns nicht ändern, aber man kann die anzeige reihenfolge ändern wenn man nach SELECT sortiert (id, name ...)
+
+SELECT id, name, price
+FROM products
+
+man kann columns auch umbennen wenn man daten abfrägt, falls man mehrere datenbanken hat und beispielsweise mehrer das column id haben
+
+SELECT id AS products_id
+FROM products
+
+Abfragen mit Bedingung: verschieden Operatoren > < , <= >= , !=
+SELECT *
+FROM products
+WHERE id = 1        --> bei name : name = 'TV' (bei varchars oder text)
+
+Mehrer Bedinungen: AND, OR
+SELECT *
+FROM products
+WHERE id = 1
+AND price > 20
+
+Bedinung mit mehreren Einträgen:
+SELECT *
+FROM products
+WHERE id IN (1,2,3) --> gibt die einträge mit id 1,2,3 aus
+
+Suchanfrage auf Strings:
+SELECT *
+FROM products
+WHERE name LIKE 'M%' --> gibt alle einträge mit M anfangsbuchstabe aus  (groß kleinschreibung beachten) oder endet mit m: '%m' bzw irgendwo '%m%'
+
+Filter bedingungen ORDER BY:
+
+SELECT *
+FROM products
+ORDER BY price --> default ascending aufsteigend : ORDER BY price ASC , absteigend DESC
+
+SELECT *
+FROM products
+ORDER BY price DESC, inventory DESC --> falls  preis gleichstand, danach inventory vergleich
+
+Abfrage limit, bei riesen datenbanken wenn man nicht will dass alle einträge gesendet werden:
+
+SELECT *
+FROM products
+LIMIT 2 --> maximal 2 mit : LIMIT 2 OFFSET 2 kann man die ersten 2 einträge überspringen (gut für pagination)
+
+Einträge hinzufügen:
+
+INSERT INTO products (name, price, inventory)
+VALUES ('Refrigerator', 4, 100)    mit RETERNING  *  am ende alles vom Eintrag ( geht auch nurd id etc) anzeigen lassen, standardmäßig wenn etwas created wird, wird der eintrag von der API zurückgesendet
+RETURNING *
+
+mehrere Einträge gehen auch mit VALUES (), (), ()
+
+Einträge löschen:
+
+DELETE
+FROM products
+WHERE id = 20
+RETURNING *  --> zeige was gelöscht wurde
+
+Einträge updaten:
+
+UPDATE products
+SET price = 67 , name = 'Fan'
+WHERE id = 2
+RETURNING *
+
+# joins und group by
+
+SELECT users.id, users.email,
+COUNT(alchemyposts.id) AS post_count
+FROM users LEFT JOIN alchemyposts
+ON users.id = alchemyposts.user_id
+GROUP BY users.id
+
+--> wir wollen id und email des users anzeigen lassen, wir wollen zählen wie viele posts ein User hat --> dafür posts.id zählen
+wird left joinen user und post, weil es gibt user , die haben keine posts, deshalb müssen wir alle user anzeigen lassen und die posts joinen.
+--> nach users.id kopieren --> damit gibt es nicht x einträge sondern alle einträge von posts sind innerhalb der gruppe users.id
+--> count wird auf jede gruppe ausgeführt
+
+SELECT alchemyposts.id ,
+COUNT(likes.post_id) AS likes_count
+FROM alchemyposts LEFT JOIN likes
+ON likes.post_id = alchemyposts.id
+GROUP BY alchemyposts.id
+--> post ids anzeigen lassen
+--> anzahl an likes auf einen post
+--> alchempyosts left joinen, weil manche posts haben keine likes
+--> nach alchemyposts gruppieren, dann zählt man in jeder gruppe von posts ids wie viele Einträge es für eine post id gibt
+
+Post 1 → [row, row, row] --> 3 rows nach count
+Post 2 → [row]
+Post 3 → [row]
+
+join, group by mit filter:
+
+SELECT alchemyposts.* ,
+COUNT(likes.post_id) AS likes_count
+FROM alchemyposts LEFT JOIN likes
+ON likes.post_id = alchemyposts.id
+WHERE alchemyposts.id = 8
+GROUP BY alchemyposts.id
+
+es wird noch unterschieden zwischen inner join und left outer join
+
+--> left join ist identisch zu left outer join
+--> inner join zeigt nur die rows an , bei denen auch wirklich einträge existieren, also falls ein post keine likes hat wird er auch nicht gezeigt

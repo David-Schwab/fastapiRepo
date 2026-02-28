@@ -1,0 +1,15 @@
+gitignore erstellen
+
+requirements.txt erstellen:
+pip freeze --> librarys ausgeben
+pip freeze > requirements.txt : in requirements speichern
+damit man machen kann: pip install .r requirements.txt
+
+
+git init
+
+git add --all
+git commit -m "first commit"
+git branch -M main
+git remote add origin https://github.com/David-Schwab/fastapiRepo.git
+git push -u origin main

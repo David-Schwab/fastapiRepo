@@ -1,0 +1,12 @@
+project/
+├─ app/                   # alles, was zur FastAPI-App gehört
+│  ├─ main.py             # FastAPI-Instanz + evtl. Root-Endpunkte
+│  ├─ models.py           # Pydantic-Modelle / Datenstrukturen
+│  ├─ schemas.py          # Schemas, DTOs, Input/Output-Modelle
+│  ├─ routes/             # einzelne Routen-Module
+│  │   ├─ posts.py
+│  │   └─ users.py
+│  └─ __init__.py         # macht app zu einem Package
+├─ tests/                 # Unit-Tests
+├─ requirements.txt       # Abhängigkeiten
+└─ README.md 

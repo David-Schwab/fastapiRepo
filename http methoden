@@ -1,0 +1,19 @@
+
+CRUD Methode: C reate (POST) , R ead  (GET), U pdate (PUT/PATCH), D elete (DELETE)
+
+/paths , URLS sollen immer im plural verwendet werden, standard convetion
+
+/paths/:id --> @app.get("/paths/{id}") , wenn man ein speziellen eintrag sehen möchte (primärschlüssel in datenbank)
+
+
+
+
+GET: http request an server, server sendet daten zurück , abhängig davon was der client 
+
+"api server gib mir die daten: "
+
+POST: Client sendet daten die nötig sind wie userName, title, postInhalt, mit http post request, server kann dann irgenwelchen inhaöt zurück schicken (evtl. bestätigung)
+
+"api server hier sind daten, mach mit denen was nötig ist"
+
+PUT: alle infos zum updaten werden gesendet, PATCH: nur ein feld ändern 

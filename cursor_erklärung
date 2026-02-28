@@ -1,0 +1,41 @@
+Ein Cursor ist ein Steuer- und Zustandsobjekt für ein SQL-Ergebnis, das auf dem Datenbankserver liegt.
+
+Er enthält:
+
+die SQL-Anweisung
+
+Metadaten (Spaltennamen, Datentypen)
+
+einen Zeiger auf die aktuell gelesene Zeile
+
+Informationen über das Result-Set
+
+❗ Der Cursor enthält nicht die Daten selbst – die liegen weiterhin im Datenbankprozess.
+
+Weil:
+Result-Sets sehr groß sein können
+Netzwerk und Speicher begrenzt sind
+SQL das schrittweise Abrufen (Streaming) erlaubt
+
+Die Datenbank sagt sinngemäß:
+„Das Ergebnis ist da – sag mir, wie viel du abrufen willst.“
+
+Der Cursor ist genau dieser Vermittler.
+
+Ein Cursor kann:
+
+SQL ausführen
+
+Result-Sets verwalten
+
+Zeilen portionsweise abrufen
+
+den aktuellen Lesezustand speichern
+
+Transaktionen korrekt einhalten
+
+Ohne Cursor müsste man:
+
+immer alle Daten auf einmal laden
+
+oder die Datenbank unnötig blockieren

@@ -1,0 +1,26 @@
+python virutal envirements
+
+szenario
+project 1 : braucht fastapi v1.2.1
+project2: braucht fastapi v2.4.3
+
+auf unserem lokalen rechner ist v1.2.1 installiert um project 2 laufen laseen zu können müssen wir fastapi 2.4.3 runterladen
+man kann nicht 2 verschiedne versionen haben sonst kanns probleme geben
+
+mit virtual environments können wir proj1 in ein venv1 packen und können python packages im venv1 installieren , komplett isoliert
+
+für project 2 können wir venv2 erstellen und dort die version 2.4.3 installieren , beide projects sind komplett separat auf einem lokalen gerät
+
+
+
+--> venv erstellen: py -m venv 'name'  // egal wie man es nennt man kann es auch einfach venv nennen , die venv ist immer projektgebunden in einem ordner,
+man kann in jedem projekt den selben namen vergeben
+
+erstellt den ornder venv unter /Scripts ist der interpreter python.exe und wir wollen nicht den globalen interpreter verwenden sondern den in unserem venv
+
+--> dazu in view , command palette enter interpreter path und dann venv/Scripts/python.exe
+
+--> im terminal auch venv aktivieren :C:\Users\Hallo\Documents\TechSkills\Python_FastAPI> venv\Scripts\activate.bat
+
+danach sieht man : (venv) C:\Users\Hallo\Documents\TechSkills\Python_FastAPI>
+

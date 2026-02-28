@@ -1,0 +1,40 @@
+Datenbank migration tool -alembic
+
+um versionen von datenbnak zu tracken , datenbanken upzudaten oder rollbacks zu machen
+
+alembi --help : zum commands sehen
+alembic init --help: um zu sehen was man noch beim initialisieren übergeben muss, in dem fall directory
+alembic init alembic: erstellt ein orner (alembic)
+
+almbic muss zugriff haben auf Base aus models.py , also das was die models erstellt (in env.py). from app.models import Base
+target_metadata = Base.metadata  #-->   damit alembic weiß welche tabellen es in der datenbank gibt, damit es die migrations erstellen kann, wenn
+
+in alembic.ini :  datbase url hinzufügen --> sqlalchemy.url = postgresql+asyncpg://postgres:david@localhost:5432/fastapiDatabse
+besser in env.py :config.set_main_option("sqlalchemy.url", f"postgresql+asyncpg://{settings.db_username}:{settings.db_password}@{settings.db_hostname}:{settings.db_port}/{settings.db_name}")
+und dann:
+
+
+
+alembic revision -m "create_alchemyposts_table" --> erstellt in alembic\versions
+alembic revision erstellt eine datenbank migration datei mit update und downgrade funktion zum erstllen von tabellen
+-m ist einfach nur  message
+
+alembic upgrade {revision_number} --> um eine tabelle zu erstellen, upzugraden
+
+alembic revision -m "added column in posts table" : falls man noch was hinzufügen will braucht man neue revision datei
+in neuer datei dann in upgrade funktion neues column einfügen:
+
+op.add_column("alchemyposts", sa.Column("phone_number", sa.String(), nullable=False))
+zum entfernen: op.drop_column("alchemyposts", "phone_number")
+
+- alembic heads: neuste revision
+- alembic upgrade head
+
+-alembic downgrade -1 : eine revision zurück oder revision number übergeben
+
+-alembic current: aktuelle revision
+-alembic history: gibt die history zurück was getan wurde
+-alembic upgrade +1 : eine revision hoch
+
+alembic revision --autogenerate -m "migration from models" # autogeneriert das was man noch machen muss um usnere postgres datenbank auf stand unsere models zu bringen
+also man kann änderungen auch in models machen und dann einfach autogeneraten

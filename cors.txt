@@ -1,0 +1,12 @@
+cors - cross origina resource sharing
+
+wenn ich meine api über postman aufrufe , wird ein request von meinem lokalen rechner gesendet
+wenn ich aber in einer browser console : fetch("http://localhost:8000/").then(res => res.json()).then(console.log)
+versuche, bekomme ich einen error:
+
+Access to fetch at 'http://localhost:8000/' from origin 'https://www.google.com'
+has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource
+
+default ist, daas api nur requests annimmt von webbrowsern, die auf der selben domain laufen (lesbare website adresse: "beispiel.de")
+
+mit cors kann man request von einem web browser von einer domain auf einen server auf einer anderen domain senden

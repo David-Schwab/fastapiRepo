@@ -1,0 +1,34 @@
+client loggt sich ein mit user und password --> /login (username + password) , request an api login daten werden an api übergeben
+2. eingabedaten werden geprüft ob sie korrekt sind : passt password zu username ---> wenn ja wird ein jwt token erstellt
+
+3. api sendet token an client, client hat dann zugriff auf resourcen die authentication benötigen (posts einsehen oder ähnliches)
+
+4 bei einem request des clients /posts {token} wird der token im header als payload mit gesendet , die api verfiziert dann den token
+5. wenn token valide , dann sendet die api daten an den client
+
+
+##################### was ist ein jwt toke, token ist nicht verschlüsselt, das heißt keine vertraulichen daten über den token senden, nicht zu viel information senden sondern wird zu viel bandbreit verbraucht
+
+token besteht aus 3 teilen:
+
+1. header : enthält metadaten über token : {
+                                            "alg": "HS256", #hash algorithmus
+                                            "typ": "JWT" #token typ
+                                            }   
+2. payload (data): man kann bestimmen was hier gesendet wird        {
+                                                                         "id": "1234567890",    
+                                                                         "role": "User"
+                                                                    }                            
+
+3. Verify Signature : HMACSHA256 ( header + payload + secret (spezielles passwort unserer api niemand soll es wissen)) --> wird zu signature
+über die signature wird geprüf ob der token valide ist . die signatur ist nur für daten korrektheit , dass niemand die daten im token verändert hat       
+
+wenn jemand was am token verändert (wenn payload oder header geändert werden, muss die signatur auch geändert werden geht aber nicht ohne secret, )
+api nimmt den neuen payload und neuen header + secret und vergleicht mit der gesendeten signatur ( muss identisch sein)
+
+###################################### wie funktioniert der login
+
+user sendet /login (email + password) an api ------> api  sucht user anhand der email in der datenbank 
+datenbank sendet infos über den user inklusive des gehashten password des user, die in der datenbank gespeichert ist ( gehashtes password matcht nicht mit dem gesendeten)
+wir müssen das gesendete passwort dann hashen und mit dem gehashten aus der datenbank vergleichen
+wenn passwort matcht wird token an client gesendet

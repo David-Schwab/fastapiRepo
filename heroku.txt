@@ -1,0 +1,23 @@
+heroku login : zum einloggen
+
+heroku create "appname" :
+
+C:\Users\Hallo\Documents\TechSkills\Python_FastAPI>git remote
+heroku
+origin
+
+git push heroku main : code auf heroku pushen
+
+gibt ein link : https://git.heroku.com/fastapi-davids.git
+
+im root directory Procfile datein erstellen : dort steht drin was man tun muss um die app zu starten
+
+web: uvicorn app.main:app --host=0.0.0.0 --port=${PORT:-5000}
+
+# host ist der den heroku uns gibt genauso wie port environment variable = ${PORT}
+: -5000 ist default , aber heroku gibt immer ein port
+
+danach das ganze auf git pushen:
+git add --all
+git commit -m "added Procfile"
+git push

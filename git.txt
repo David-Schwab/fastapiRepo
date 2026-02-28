@@ -7,7 +7,6 @@ damit man machen kann: pip install .r requirements.txt
 
 
 git init
-
 git add --all
 git commit -m "first commit"
 git branch -M main

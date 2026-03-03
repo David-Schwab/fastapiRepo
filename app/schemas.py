@@ -28,6 +28,10 @@ class PostCreate(PostBase): # geht auch so , dann wird von postbase geerbt
 '''
 
 ###response schemas
+class ResUser(BaseModel): # kein passwort übergeben
+    id: int
+    email: EmailStr
+    created_at: datetime
 
 class ResPost(PostBase): # created_at wird nicht gezeigt
     id: int # erbt Rest von Postbase
@@ -44,10 +48,7 @@ class UserCreate(BaseModel):
     email: EmailStr # validiert ob die eingabe auch eine email ist
     password: str
 
-class ResUser(BaseModel): # kein passwort übergeben
-    id: int
-    email: EmailStr
-    created_at: datetime
+
 
 #############################################################
 

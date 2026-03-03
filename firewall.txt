@@ -1,0 +1,19 @@
+#firewall aufsetzen, für basic security, wie nur ports öffnen , die wir auch benutzen
+
+# built in firewall UFW
+
+sudo ufw status --> inactive
+
+#wir müssen regeln aufsetzen, welchen traffic erlauben wir auf unserem server
+
+sudo ufw allow http # erlaubt http traffic
+sudo ufw allow https
+sudo ufw allow ssh   # SSH (Secure Shell) ist ein verschlüsseltes Protokoll, mit dem du sicher auf einen entfernten Rechner zugreifen kannst, zugriff von host auf vm
+sudo ufw allow 5432 # postgres traffic erlauben, aber das funktioniert so, weil die datenbank sowieso lokal läuft: weglassen wenn man nicht will das jemand von außen auf datenbank zugreifen kann
+sudo ufw enable
+y
+sudo ufw status # man kann alle regeln sehen
+
+
+zum löschen:
+sudo ufw delete allow 5432

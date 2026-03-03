@@ -1,0 +1,70 @@
+password : 123
+#mit ubunto.iso als image erstellen , danach entfernen
+
+#python installieren, pip installieren
+
+sudo apt install python3-pip
+
+sudo apt install python3-virtualenv
+
+sudo apt install postgresql postgresql-contrib
+
+#um auf postgre zuzugreifen
+psql --help
+
+sudo -i -u postgres
+psql -U postgres
+
+\password postgres #: und dann password eingeben
+#exit mit : \q
+danach ist möglich : su - postgres
+exit --> logout
+cd /etc/postgresql/16/main : vorher psql --version
+
+ls --> pg_hba.conf , postgresql.conf
+
+sudo vi postgresql.conf --> #listen adresses ist localhost ändern zu listen_adresses = '*'
+
+:wq --># zum schließen
+
+#in pg_hba.conf --> peer zu md5 ändern und ip adresse zu 0.0.0.0/0 und ::/0 ändern bei ipv4 und ipv6
+
+systemctl restart postgresql
+
+#danach in pg admin neuen server
+#register --> create new server
+#--> dort ip der vm eintragen , vorher in virtual box network auf bridge umstellen
+
+#im projectfolder
+virtualenv venv
+
+ls -la
+
+source venv/bin/activate   #--> deactivate zum verlassen
+
+mkdir src/
+cd src/
+#dort drin git clone
+#dann in src : pip install -r requirements.txt
+uvicorn app.main:app
+
+
+#env variablen erstellen sonst geht das nicht:
+export MY_NAME=david --> variable festlegen
+printenv --> alle variablen sehen
+
+touch .env --> env datei erstellen
+vi .env --> zum öffnen
+source .env --> env variablen setzen
+
+#aus host env in vm env kopieren
+set -o allexport; source /home/david/.env; set +o allexport --> env variablen festsetzen
+#env variablen verschwinden beim reboot
+vi .profile --> am ende dort den command platzieren "set -o... , beim reboot wird das dann gesetzt
+
+# in pg admin database erstellen
+# app starten
+# mit uvicorn --host 0.0.0.0 app.main:app --> auf alle ip adressen hören und auf den default port 8000
+# jetzt kann man auf host da drauf zugreifen über: ipadresee:8000 --> http://192.168.178.20:8000/
+
+#  gunicorn process manager

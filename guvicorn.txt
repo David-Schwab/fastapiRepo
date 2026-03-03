@@ -1,0 +1,87 @@
+Weil Uvicorn allein:
+
+-nur ein Prozess
+
+-kein Restart bei Crash
+
+-kein Load Balancing
+
+-keine Worker-Verwaltung
+
+-kein Production Process Management
+
+Uvicorn ist ein ASGI server, kann HTTP Requests empfangen
+
+,FastAPI ausführen
+,async Python laufen lassen
+
+
+gunicorn (WSGI) ist ein prozess manager für python apps
+
+-mehrere Worker starten
+
+-abstürzende Worker neu starten
+
+-Traffic verteilen
+
+-Production stabil machen
+
+--> fastapi ist asgi , deshalb benutz gunicorn , uvicorn worker
+pip install gunicorn
+
+pip install httptools
+pip install uvloop
+
+#gunicorn workers fetlegen : gunicorn -w 4 -k uvicorn.workers.UvicornWorker app.main:app --bind 0.0.0.0:8000 --> 4 workers
+
+#soll beim booten schon starten und im hintergrund laufen
+
+cd /etc/sytsemd/system/
+ls --> dann sieht man alle services
+
+wir wollen neuen service, der das automatisch startet
+
+gunicorn.service:
+
+[Unit]
+Description=demo fastapi app
+After=network.target                #starte erst wenn internet läuft
+
+[Service]
+User=david
+Group=david
+WorkingDirectory=/home/david/FASTAPI/src/     #von hier wird die app gestartet
+Environment="PATH=/home/david/FASTAPI/venv/bin" #nutze das als python virtual environment
+ExecStart=/home/david/FASTAPI/venv/bin/gunicorn -w 4 -k uvicorn.workers.UvicornWorker app.main:app --bind 0.0.0.0:8000 #gunicorn startet 4 parallel prozesse hört auf alle verbindngen von außen (0.0.0.0)
+
+[Install]
+WantedBy=multi-user.target  #Service startet automatisch beim Booten
+
+
+
+cd /etc/systemd/system/
+
+sudo vi apiTutorial.service
+#dort inhalt rein kopieren
+
+systemctl start apiTutorial
+systemctl status apiTutorial
+
+
+#services kennen keine env variablen deswegen hinzufügen in service:
+EnvironmentFile=/home/david/.env   # da sind die environment variablen für die api app
+#nach änderung : systemctl daemon-reload
+system restart apiTutorial
+
+
+sudo systemctl enable apiTutorial --> damit es beim start bootet
+
+
+
+
+
+Linux
+ └── systemd (Service Manager)
+       └── Gunicorn (Process Manager)
+             └── Uvicorn Workers
+                   └── FastAPI App

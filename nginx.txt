@@ -1,0 +1,105 @@
+nginx ist ein high performance webserver. nginx ist ein vermittler
+
+* kann als Proxy agieren : Nginx leitet Anfragen von Clients an einen anderen Server weiter (z. B. deine App).
+Es fungiert als Vermittler, oft für Lastverteilung, Caching oder Sicherheit.
+
+--> https request --> nginx --> http --> gunicorn (Worker "4")
+
+*kann auch SSL Termination: Nginx entschlüsselt die verschlüsselte HTTPS-Verbindung vom Client,
+ bevor die Anfrage an den Backend-Server geht. Backend sieht dann nur unverschlüsseltes HTTP – Nginx übernimmt die SSL-Arbeit.
+- nging ist optimiert auf ssl , also entschlüsselt http request und sendet entschlüsselte http anfrage an baclend
+
+*SSL (Secure Sockets Layer) ist ein Verschlüsselungsprotokoll, das die Kommunikation zwischen einem Client (z. B. Browser) und einem Server absichert.
+-Es sorgt dafür, dass Daten verschlüsselt übertragen werden (niemand kann sie unterwegs mitlesen).
+-es authentifiziert den Server, damit du sicher weißt, dass du mit der echten Webseite verbunden bist.
+- Beispiel: Wenn du https:// siehst, läuft die Verbindung über SSL/TLS.
+
+
+Client → Nginx → Backend: Alle Anfragen vom Internet kommen zuerst zu Nginx. Nginx ist der gateway
+- https zu http
+
+- im backend installieren in ubuntu
+
+sudo apt install nginx -y
+systemctl start nginx
+
+cd /etc/nginx/sites-available
+ls --> default
+cat default --> man sieht die default configuration
+
+#default file ändern:
+#der server hört sowohl ipv4 und ipv6 auf port 80 , also alles was per http://   kommt
+# Stell dir deinen Computer wie ein Haus vor. Die IP-Adresse ist die Hausnummer – sie sagt, welches Gerät im Netzwerk angesprochen wird.
+# Ein Port ist wie eine Tür im Haus, durch die bestimmte Arten von Daten reingehen oder rausgehen.
+# Ich öffne Tür 80, um HTTP-Anfragen zu empfangen. http anfragen kommen über port 80
+
+server{
+    listen 80;
+    listen[::]:80;
+
+    server_name _;                                                      #muss ersetzt werden durch domain name : "example.com"
+
+    location / {                                                        # alle anfragen an die root ulr "/" werden hier verarbeitet
+        proxy_pass http://localhost:8000;                              #wohin soll die anfrage weitergeleitet werden, dort läuft gunicorn
+        proxy_http_version 1.1;                                         # nginx soll http version 1.1 verwenden
+        proxy_set_header X-Real-IP $remote_addr;                        # ip adresse vom client, damit sie backend mitbekommt
+        proxy_set_header X-Forwared-For $proxy_add_x_forwarded_for;     # Wenn mehrere Proxies dazwischenliegen (z. B. Cloudflare → Nginx → Backend), werden alle IPs in einer Kette weitergegeben.
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';                          # websocket fähig machen
+        proxy_set_header Host $http_host;                               # Backend bekommt die Domain, die der Client aufgerufen hat
+        proxy_set_header X-NginX-Proxy true;                            # Reine Info für das Backend: „Die Anfrage kam über Nginx“.
+        proxy_redirect off;                                             # Wenn das Backend Redirects zurückschickt (z. B. /login → /dashboard), verändert Nginx sie nicht.
+    }
+
+}
+
+
+
+sudo vi default
+
+
+#einfügen
+
+        proxy_pass http://localhost:8000;
+        proxy_http_version 1.1;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwared-For $proxy_add_x_forwarded_for;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $http_host;
+        proxy_set_header X-NginX-Proxy true;
+        proxy_redirect off;
+
+
+systemctl restart nginx
+
+
+
+noch sagt unser webbrowser : website not secure (neben url sichtbar) , weil wir http benutzen, deshalb müssen wir es auf https setzen
+aktuell http://192.168.178.20/docs
+: HTTP = unverschlüsselt → Browser warnt, dass Daten wie Passwörter, Tokens oder Formulare mitgelesen werden könnte
+
+dafür braucht man domain name. muss man kaufen
+
+Nginx übernimmt das Verschlüsseln (SSL/TLS).
+Dafür brauchst du ein Zertifikat
+:Zertifikate werden eine Domain gebunden.
+
+
+SSL/TLS-Zertifikate dienen zwei Zwecken:
+Verschlüsselung der Verbindung → verhindert Mitlesen.
+Authentifizierung → Browser prüft: „Stimmt die Domain mit dem Zertifikat überein?“
+
+wenn man eine anfrage an die domain macht sollte die weitergeleitet werden an die ip adresse von unserem server, das macht eine öffentliche gekaufte domain
+
+ssl service: certbot
+auswählen: website is running nginx on ubuntu
+--> konfigurtiert nginx damit es https entgegenimmt über die domain , einfach angaben von webseite folgen
+
+in der defualt datei wird dann beispielsweise umgestellt :: listen[::]:443 --> https
+und redirect von http auf https
+
+
+#nginx soll starten bei reboot:
+
+systemctl status nginx # ist schon festgesetzt das es beim reboot starten soll

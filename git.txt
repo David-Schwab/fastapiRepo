@@ -12,3 +12,10 @@ git commit -m "first commit"
 git branch -M main
 git remote add origin https://github.com/David-Schwab/fastapiRepo.git
 git push -u origin main
+
+
+zum erneuten deployen:
+
+git add --all
+git commit -m "neuer commit"
+git push origin main

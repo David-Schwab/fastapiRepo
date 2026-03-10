@@ -10,11 +10,11 @@ jobs: # die Jobs, die ausgeführt werden sollen
   job1:
     environment: Testing # Environment, in dem der Job ausgeführt wird, z.B. Testing, auf github festgelegt
     env: # env variablen, können nur in job 1 verwendet werden
-      #DB_PASSWORD: david
-      # DB_NAME: fastapiDatabase
-      #DB_PORT: ${{secrets.DB_PORT}}
-      #  DB_HOSTNAME: ${{secrets.DB_HOSTNAME}} # auf github unter setting und dann secrets /variables, unter enivronment secrets (vorher neues env erstellen) die env variablen festlegen
-      #  DB_USERNAME: postgres
+      DB_PASSWORD: david
+      DB_NAME: fastapi_test_db
+      DB_PORT: ${{secrets.DB_PORT}}
+      DB_HOSTNAME: ${{secrets.DB_HOSTNAME}} # auf github unter setting und dann secrets /variables, unter enivronment secrets (vorher neues env erstellen) die env variablen festlegen
+      DB_USERNAME: postgres
       SECRETKEY: ${{secrets.SECRET_KEY}}
       ALGORITHM: HS256
       EXPIRE_MIN: 30

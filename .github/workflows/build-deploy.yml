@@ -129,6 +129,7 @@ jobs: # die Jobs, die ausgeführt werden sollen
         uses: actions/checkout@v4
       - name: Deploy to Ubuntu
         run: |
+          cd /home/david/FASTAPI/src
           git pull
           sudo systemctl restart api
 
@@ -163,3 +164,20 @@ jobs: # die Jobs, die ausgeführt werden sollen
 #```
 #√ Connected to GitHub
 #Listening for Jobs
+
+#sudo nano /etc/systemd/system/api.service
+#[Unit]
+#Description=FastAPI App
+#After=network.target
+
+#[Service]
+#User=david
+#WorkingDirectory=/home/david/fastapiRepo
+#ExecStart=/home/david/fastapiRepo/venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000
+#Restart=always
+
+#[Install]
+#WantedBy=multi-user.target
+
+#Strg + O   → speichern (dann Enter bestätigen)
+#Strg + X   → beenden

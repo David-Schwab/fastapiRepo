@@ -18,45 +18,45 @@ jobs: # die Jobs, die ausgeführt werden sollen
     ALGORITHM: HS256
     EXPIRE_MIN: 30
 
-job1: #name des jobs
-  runs-on:
-    ubuntu-latest # Betriebssystem, auf dem der Job ausgeführt wird
+  job1: #name des jobs
+    runs-on:
+      ubuntu-latest # Betriebssystem, auf dem der Job ausgeführt wird
 
 
-    # Service containers to run with `container-job`
-  services:
-    # Label used to access the service container ---> servcice name
-    postgres:
-      # Docker Hub image
-      image: postgres:15
-      env:
-        POSTGRES_USER: postgres # muss man nicht angeben, ist defaultmäßig postgres
-        POSTGRES_PASSWORD: david #pflicht
-        POSTGRES_DB: fastapi_test_db #pflicht conftest.py versucht sich zu verbinden mit "fastapi_test_db", deshalb muss es gleich heißen wie in conftest.py
+      # Service containers to run with `container-job`
+    services:
+      # Label used to access the service container ---> servcice name
+      postgres:
+        # Docker Hub image
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres # muss man nicht angeben, ist defaultmäßig postgres
+          POSTGRES_PASSWORD: david #pflicht
+          POSTGRES_DB: fastapi_test_db #pflicht conftest.py versucht sich zu verbinden mit "fastapi_test_db", deshalb muss es gleich heißen wie in conftest.py
 
-      options: >-
-        --health-cmd pg_isready
-        --health-interval 10s
-        --health-timeout 5s
-        --health-retries 5
-      ports:
-        - 5432:5432
-  # Wenn jemand auf Port 5432 des Runners zugreift, leite das weiter an Port 5432 des Containers."
-  #Python-Code → Port 5432 des Runners → Port 5432 des Containers → PostgreSQL
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    # Wenn jemand auf Port 5432 des Runners zugreift, leite das weiter an Port 5432 des Containers."
+    #Python-Code → Port 5432 des Runners → Port 5432 des Containers → PostgreSQL
 
-  steps: # die Schritte, die in diesem Job ausgeführt werden sollen
-    - name: Checkout code # Schritt 1: Code aus dem Repository auschecken
-      uses: actions/checkout@v4 # Action, um den Code aus dem Repository zu holen, macht pull repo --> im marketplace ist es checkout@v4 genannt
-    - name: Install python 3.11 # Schritt 2: Python 3.11 installieren
-      uses: actions/setup-python@v5 # Action, um Python zu installieren, im marketplace ist es setup-python@v2 genannt
-      with:
-        python-version: 3.11 # die Version von Python, die installiert werden soll
-    - name: Pip updaten # Schritt 3: Pip aktualisieren
-      run: python -m pip install --upgrade pip # Befehl, um Pip zu aktualisieren (linux befehl)
-    - name: Abhängigkeiten installieren # Schritt 4: Abhängigkeiten installieren
-      run: pip install -r requirements.txt # Befehl, um die Abhängigkeiten
-    - name: Tests ausführen # Schritt 5: Tests ausführen
-      run: pytest
+    steps: # die Schritte, die in diesem Job ausgeführt werden sollen
+      - name: Checkout code # Schritt 1: Code aus dem Repository auschecken
+        uses: actions/checkout@v4 # Action, um den Code aus dem Repository zu holen, macht pull repo --> im marketplace ist es checkout@v4 genannt
+      - name: Install python 3.11 # Schritt 2: Python 3.11 installieren
+        uses: actions/setup-python@v5 # Action, um Python zu installieren, im marketplace ist es setup-python@v2 genannt
+        with:
+          python-version: 3.11 # die Version von Python, die installiert werden soll
+      - name: Pip updaten # Schritt 3: Pip aktualisieren
+        run: python -m pip install --upgrade pip # Befehl, um Pip zu aktualisieren (linux befehl)
+      - name: Abhängigkeiten installieren # Schritt 4: Abhängigkeiten installieren
+        run: pip install -r requirements.txt # Befehl, um die Abhängigkeiten
+      - name: Tests ausführen # Schritt 5: Tests ausführen
+        run: pytest
   #   - name: Login to Docker Hub
   #     uses: docker/login-action@v4
   #     with:
@@ -83,66 +83,66 @@ job1: #name des jobs
   #   - name: Image digest ausgeben # ← neuer Schritt
   #     run: echo ${{ steps.build.outputs.digest }}
 
-#**Wozu es nützlich ist:**
-#```
-#latest Tag    → kann sich jederzeit ändern → "latest" heute ≠ "latest" morgen
-#Image Digest  → unveränderlich → sha256:abc123 ist immer exakt dasselbe Image
-# eindeutige Kennung der image version
+  #**Wozu es nützlich ist:**
+  #```
+  #latest Tag    → kann sich jederzeit ändern → "latest" heute ≠ "latest" morgen
+  #Image Digest  → unveränderlich → sha256:abc123 ist immer exakt dasselbe Image
+  # eindeutige Kennung der image version
 
-# es gibt verschiedene Möglichkeiten, den Cache zu speichern und zu laden:
+  # es gibt verschiedene Möglichkeiten, den Cache zu speichern und zu laden:
 
-# Typ 1: inline → Cache direkt im Image gespeichert (dein Fall)
-#cache-from: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/fastapi_tut:latest
-#cache-to: type=inline
+  # Typ 1: inline → Cache direkt im Image gespeichert (dein Fall)
+  #cache-from: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/fastapi_tut:latest
+  #cache-to: type=inline
 
-# Typ 2: gha → Cache in GitHub Actions Cache gespeichert
-#cache-from: type=gha
-#cache-to: type=gha,mode=max
+  # Typ 2: gha → Cache in GitHub Actions Cache gespeichert
+  #cache-from: type=gha
+  #cache-to: type=gha,mode=max
 
-# Typ 3: local → Cache lokal auf dem Runner gespeichert
-#cache-from: type=local,src=/tmp/.buildx-cache
-#cache-to: type=local,dest=/tmp/.buildx-cache
-#```
+  # Typ 3: local → Cache lokal auf dem Runner gespeichert
+  #cache-from: type=local,src=/tmp/.buildx-cache
+  #cache-to: type=local,dest=/tmp/.buildx-cache
+  #```
 
-#**Wann welchen nehmen:**
-#```
-#inline  → einfachste Lösung, Cache im Docker Hub Image → gut für dein Projekt ✓
-#gha     → schneller, Cache in GitHub gespeichert → gut für größere Projekte
-#local   → nur sinnvoll wenn man selbst gehostete Runner hat
+  #**Wann welchen nehmen:**
+  #```
+  #inline  → einfachste Lösung, Cache im Docker Hub Image → gut für dein Projekt ✓
+  #gha     → schneller, Cache in GitHub gespeichert → gut für größere Projekte
+  #local   → nur sinnvoll wenn man selbst gehostete Runner hat
 
-#########
-#**Das große Bild — was passiert bei jedem Push:**
-#```
-#1. GitHub Runner startet
-#2. Meldet sich bei Docker Hub an
-#3. Aktiviert Buildx
-#4. Liest dein Dockerfile
-#5. Baut daraus ein Docker Image (mit Cache vom letzten Build)
-# 6. Lädt das fertige Image zu Docker Hub hoch
-#
+  #########
+  #**Das große Bild — was passiert bei jedem Push:**
+  #```
+  #1. GitHub Runner startet
+  #2. Meldet sich bei Docker Hub an
+  #3. Aktiviert Buildx
+  #4. Liest dein Dockerfile
+  #5. Baut daraus ein Docker Image (mit Cache vom letzten Build)
+  # 6. Lädt das fertige Image zu Docker Hub hoch
+  #
 
-job2-deploy:
-  runs-on: ubuntu-latest
-  needs: [job1]
-  steps:
-    - name: Checkout code # ← brauchen wir um die docker-compose.prod.yml zu haben
-      uses: actions/checkout@v4
+  job2-deploy:
+    runs-on: ubuntu-latest
+    needs: [job1]
+    steps:
+      - name: Checkout code # ← brauchen wir um die docker-compose.prod.yml zu haben
+        uses: actions/checkout@v4
 
-    - name: Deploy to Ubuntu Server
-      uses: appleboy/ssh-action@v1
-      with:
-        host: ${{ secrets.SERVER_HOST }}
-        username: ${{ secrets.SERVER_USER }}
-        password: ${{ secrets.SERVER_PASSWORD }}
-        script: |
-          cd /app/src
-          git pull
-          sudo systemctl restart api
-        # docker compose -f docker-compose.prod.yml pull  # ← neues Image von Docker Hub holen
-        # docker compose -f docker-compose.prod.yml up -d --remove-orphans  # ← Container neu starten
+      - name: Deploy to Ubuntu Server
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          password: ${{ secrets.SERVER_PASSWORD }}
+          script: |
+            cd /app/src
+            git pull
+            sudo systemctl restart api
+          # docker compose -f docker-compose.prod.yml pull  # ← neues Image von Docker Hub holen
+          # docker compose -f docker-compose.prod.yml up -d --remove-orphans  # ← Container neu starten
 
-#**Was du vorher auf GitHub als Secrets hinzufügen musst:**
-#```
-#SERVER_HOST     → IP-Adresse deines Ubuntu Servers (z.B. 123.456.789.0)
-#SERVER_USER     → SSH Benutzername (z.B. ubuntu)
-#SERVER_SSH_KEY  → privater SSH-Schlüssel (~/.ssh/id_rsa Inhalt)
+  #**Was du vorher auf GitHub als Secrets hinzufügen musst:**
+  #```
+  #SERVER_HOST     → IP-Adresse deines Ubuntu Servers (z.B. 123.456.789.0)
+  #SERVER_USER     → SSH Benutzername (z.B. ubuntu)
+  #SERVER_SSH_KEY  → privater SSH-Schlüssel (~/.ssh/id_rsa Inhalt)

@@ -19,7 +19,9 @@ jobs: # die Jobs, die ausgeführt werden sollen
       ALGORITHM: HS256
       EXPIRE_MIN: 30
 
-    runs-on: ubuntu-latest # Betriebssystem, auf dem der Job ausgeführt wird
+    runs-on:
+      ubuntu-latest # Betriebssystem, auf dem der Job ausgeführt wird
+
 
       # Service containers to run with `container-job`
     services:
@@ -120,34 +122,24 @@ jobs: # die Jobs, die ausgeführt werden sollen
   #
 
   job2-deploy:
-    environment: Testing
     runs-on: self-hosted
     needs: [job1]
     steps:
       - name: Checkout code # ← brauchen wir um die docker-compose.prod.yml zu haben
         uses: actions/checkout@v4
+      - name: Deploy to Ubuntu
+        run: |
+          git pull
+          sudo systemctl restart api
 
-      - name: Deploy to Ubuntu Server
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          password: ${{ secrets.SERVER_PASSWORD }}
-          script: |
-            cd /app/src
-            git pull
-            sudo systemctl restart api
-          # docker compose -f docker-compose.prod.yml pull  # ← neues Image von Docker Hub holen
-          # docker compose -f docker-compose.prod.yml up -d --remove-orphans  # ← Container neu starten
+        # docker compose -f docker-compose.prod.yml pull  # ← neues Image von Docker Hub holen
+        # docker compose -f docker-compose.prod.yml up -d --remove-orphans  # ← Container neu starten
 
   #**Was du vorher auf GitHub als Secrets hinzufügen musst:**
   #```
   #SERVER_HOST     → IP-Adresse deines Ubuntu Servers (z.B. 123.456.789.0)
   #SERVER_USER     → SSH Benutzername (z.B. ubuntu)
   #SERVER_SSH_KEY  → privater SSH-Schlüssel (~/.ssh/id_rsa Inhalt)
-
-
-
 
 # man braucht self hosted runner, weil ubunut lokal läuft
 # 1. Ordner erstellen

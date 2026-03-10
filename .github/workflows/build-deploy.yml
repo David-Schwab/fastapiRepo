@@ -10,12 +10,12 @@ jobs: # die Jobs, die ausgeführt werden sollen
   job1:
     environment: Testing # Environment, in dem der Job ausgeführt wird, z.B. Testing, auf github festgelegt
     env: # env variablen, können nur in job 1 verwendet werden
-      DB_PASSWORD: david
-      DB_NAME: fastapiDatabase
-      DB_PORT: ${{secrets.DB_PORT}}
-      DB_HOSTNAME: ${{secrets.DB_HOSTNAME}} # auf github unter setting und dann secrets /variables, unter enivronment secrets (vorher neues env erstellen) die env variablen festlegen
-      DB_USERNAME: postgres
-      SECRETKEY: 09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7
+      #DB_PASSWORD: david
+      # DB_NAME: fastapiDatabase
+      #DB_PORT: ${{secrets.DB_PORT}}
+      #  DB_HOSTNAME: ${{secrets.DB_HOSTNAME}} # auf github unter setting und dann secrets /variables, unter enivronment secrets (vorher neues env erstellen) die env variablen festlegen
+      #  DB_USERNAME: postgres
+      SECRETKEY: ${{secrets.SECRET_KEY}}
       ALGORITHM: HS256
       EXPIRE_MIN: 30
     runs-on:
@@ -27,9 +27,9 @@ jobs: # die Jobs, die ausgeführt werden sollen
       # Label used to access the service container ---> servcice name
       postgres:
         # Docker Hub image
-        image: postgres
-        # Provide the password for postgres
-        env: # env variablen, können nur in job 1 verwendet werden
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
           POSTGRES_PASSWORD: david
           POSTGRES_DB: fastapi_test_db
         options: >-
@@ -37,8 +37,8 @@ jobs: # die Jobs, die ausgeführt werden sollen
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-        ports:
-          - 5432:5432
+        #ports:
+    #- 5432:5432
 
     steps: # die Schritte, die in diesem Job ausgeführt werden sollen
       - name: Checkout code # Schritt 1: Code aus dem Repository auschecken

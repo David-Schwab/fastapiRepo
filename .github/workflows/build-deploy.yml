@@ -8,16 +8,38 @@ on: # wann sollte der Workflow ausgeführt werden
 
 jobs: # die Jobs, die ausgeführt werden sollen
   job1:
+    environment: Testing # Environment, in dem der Job ausgeführt wird, z.B. Testing, auf github festgelegt
     env: # env variablen, können nur in job 1 verwendet werden
       DB_PASSWORD: david
       DB_NAME: fastapiDatabase
-      DB_PORT: 5432
-      DB_HOSTNAME: postgres_db
+      DB_PORT: ${{secrets.DB_PORT}}
+      DB_HOSTNAME: ${{secrets.DB_HOSTNAME}} # auf github unter setting und dann secrets /variables, unter enivronment secrets (vorher neues env erstellen) die env variablen festlegen
       DB_USERNAME: postgres
       SECRETKEY: 09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7
       ALGORITHM: HS256
       EXPIRE_MIN: 30
-    runs-on: ubuntu-latest # Betriebssystem, auf dem der Job ausgeführt wird
+    runs-on:
+      ubuntu-latest # Betriebssystem, auf dem der Job ausgeführt wird
+
+
+      # Service containers to run with `container-job`
+    services:
+      # Label used to access the service container ---> servcice name
+      postgres:
+        # Docker Hub image
+        image: postgres
+        # Provide the password for postgres
+        env: # env variablen, können nur in job 1 verwendet werden
+          POSTGRES_PASSWORD: david
+          POSTGRES_DB: fastapi_test_db
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
     steps: # die Schritte, die in diesem Job ausgeführt werden sollen
       - name: Checkout code # Schritt 1: Code aus dem Repository auschecken
         uses: actions/checkout@v4 # Action, um den Code aus dem Repository zu holen, macht pull repo --> im marketplace ist es checkout@v4 genannt

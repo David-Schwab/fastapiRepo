@@ -58,3 +58,14 @@ steps:                            #Liste von Arbeitsschritten, die in einem Job 
 
 
 - folder erstellen ---> .github/workflows
+
+
+
+###########################################################
+workflow als docker images
+
+access tocken auf doker hub holen
+
+secret key anlegen
+
+--> sowohl access token als auch username

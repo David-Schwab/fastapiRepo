@@ -19,9 +19,7 @@ jobs: # die Jobs, die ausgeführt werden sollen
       ALGORITHM: HS256
       EXPIRE_MIN: 30
 
-    runs-on:
-      ubuntu-latest # Betriebssystem, auf dem der Job ausgeführt wird
-
+    runs-on: ubuntu-latest # Betriebssystem, auf dem der Job ausgeführt wird
 
       # Service containers to run with `container-job`
     services:
@@ -147,3 +145,29 @@ jobs: # die Jobs, die ausgeführt werden sollen
   #SERVER_HOST     → IP-Adresse deines Ubuntu Servers (z.B. 123.456.789.0)
   #SERVER_USER     → SSH Benutzername (z.B. ubuntu)
   #SERVER_SSH_KEY  → privater SSH-Schlüssel (~/.ssh/id_rsa Inhalt)
+
+
+
+
+# man braucht self hosted runner, weil ubunut lokal läuft
+# 1. Ordner erstellen
+#mkdir actions-runner && cd actions-runner
+
+# 2. Runner herunterladen
+#curl -o actions-runner-linux-x64-2.332.0.tar.gz -L https://github.com/actions/runner/releases/download/v2.332.0/actions-runner-linux-x64-2.332.0.tar.gz
+# sudo apt install curl -y
+# curl -o actions-runner-linux-x64-2.332.0.tar.gz -L https://github.com/actions/runner/releases/download/v2.332.0/actions-runner-linux-x64-2.332.0.tar.gz
+# 3. Entpacken
+#tar xzf ./actions-runner-linux-x64-2.332.0.tar.gz
+
+# 4. Konfigurieren (Token ist bereits drin von GitHub)
+#./config.sh --url https://github.com/David-Schwab/fastapiRepo --token AMYCE2RPWYDKHL6JZDHSXQLJWBM2M
+
+# 5. Starten
+#./run.sh
+#```,
+
+#Wenn `./run.sh` läuft siehst du:
+#```
+#√ Connected to GitHub
+#Listening for Jobs

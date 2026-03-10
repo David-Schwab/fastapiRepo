@@ -31,7 +31,8 @@ jobs: # die Jobs, die ausgeführt werden sollen
         env:
           POSTGRES_USER: postgres # muss man nicht angeben, ist defaultmäßig postgres
           POSTGRES_PASSWORD: david #pflicht
-          POSTGRES_DB: fastapi_testing # name optional , defualt ist postgres
+          POSTGRES_DB: fastapi_test_db #pflicht conftest.py versucht sich zu verbinden mit "fastapi_test_db", deshalb muss es gleich heißen wie in conftest.py
+
         options: >-
           --health-cmd pg_isready
           --health-interval 10s

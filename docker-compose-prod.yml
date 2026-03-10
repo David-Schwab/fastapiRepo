@@ -1,0 +1,40 @@
+services:
+  api: #api ist name des service , ein service ist ein container , ein image ist eine klasse" bauplan" und ein container ist ein objekt davon
+    # build: . # baut ein image aus dem dockerfile im root directory
+    image: davids283/fastapi_tut #hier benuten wird das image, das aus dem dockerfile gebaut wurde und auf dockerhub liegt
+    ports:
+      - 80:8000 # in prdo auf 80 hören , damit man den webbrowser benutzen kann ,weil 80 ist http port
+    environment:
+      SECRETKEY: ${SECRETKEY} # Nicht hardcoden
+      ALGORITHM: ${ALGORITHM}
+      EXPIRE_MIN: ${EXPIRE_MIN}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      DB_PORT: ${DB_PORT}
+      DB_HOSTNAME: ${DB_HOSTNAME} # hier muss der hostname genauso heißen wie der service name von postgres_db damit die api den postgres_db container ansprechen kann
+      DB_USERNAME: ${DB_USERNAME}
+    # volumes:
+    #- ./:/usr/src/app:ro #entfernen, weil in prod keine live änderungen am code gemacht werden
+    #command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload  # ohne command
+    depends_on: #api muss warten bis postgres_db gesund ist bevor er startet
+      postgres_db:
+        condition: service_healthy # ← wait until postgres passes health check
+
+  postgres_db: # DATABASE_HOSTNAME ENV varible soll gleich heißen wie der service : dann weiß der api container von oben, das er den postgres_db container ansprechen soll udn kennt dann automatisch seine ip adresse
+    image: postgres
+    #  ports:
+    #    - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+
+    volumes:
+      - postgr-db:/var/lib/postgresql
+    healthcheck: # ← define what "healthy" means
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s # check every 5 seconds
+      timeout: 5s # fail if no response within 5s
+      retries: 5 # retry up to 5 times before giving up
+
+volumes:
+  postgr-db:

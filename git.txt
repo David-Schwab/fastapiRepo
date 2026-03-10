@@ -19,3 +19,8 @@ zum erneuten deployen:
 git add --all
 git commit -m "neuer commit"
 git push origin main
+
+und danach auf ubuntu im src ordner vom projekt:
+git pull
+
+sudo systemctl restart apiTutorial

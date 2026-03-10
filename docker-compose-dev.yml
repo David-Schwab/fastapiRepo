@@ -1,0 +1,39 @@
+services:
+  api: #api ist name des service , ein service ist ein container , ein image ist eine klasse" bauplan" und ein container ist ein objekt davon
+    build: . # baut ein image aus dem dockerfile im root directory
+    ports:
+      - 8000:8000 #<port on localhost>:<port on container> , wenn ich eine anfrage an meinen container sende über port 4000 wird er an port 8000 weitergeleitet, hier auf 8000 erstmal lassen
+    environment:
+      SECRETKEY: 09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7
+      ALGORITHM: HS256
+      EXPIRE_MIN: 30
+      DB_PASSWORD: david
+      DB_NAME: fastapiDatabase
+      DB_PORT: 5432
+      DB_HOSTNAME: postgres_db # hier muss der hostname genauso heißen wie der service name von postgres_db damit die api den postgres_db container ansprechen kann
+      DB_USERNAME: postgres
+    volumes:
+      - ./:/usr/src/app:ro
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    depends_on: #api muss warten bis postgres_db gesund ist bevor er startet
+      postgres_db:
+        condition: service_healthy # ← wait until postgres passes health check
+
+  postgres_db: # DATABASE_HOSTNAME ENV varible soll gleich heißen wie der service : dann weiß der api container von oben, das er den postgres_db container ansprechen soll udn kennt dann automatisch seine ip adresse
+    image: postgres
+    #  ports:
+    #    - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: david
+      POSTGRES_DB: fastapiDatabase
+
+    volumes:
+      - postgr-db:/var/lib/postgresql
+    healthcheck: # ← define what "healthy" means
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s # check every 5 seconds
+      timeout: 5s # fail if no response within 5s
+      retries: 5 # retry up to 5 times before giving up
+
+volumes:
+  postgr-db:

@@ -1,0 +1,136 @@
+Docker installieren für windows
+
+Docker hub, zum docker images pusehn, dort gibt es verschiedene docker images
+
+dort suchen nach python image, das ist ein container mit nur python drauf
+
+die idee hinter docker ist es ein image zu haben, wo alles drauf ist was wir brauchen um unsere app zum laufen zu bringen
+
+dazu müssen wir ein custom image bauen --> zum start base python image nehmen, dann source code dort speichern und dependencies
+
+Dockerfile --> erstellen im projekt
+
+
+um docker images zu bauen:
+
+docker build --help
+docker build -t dockerfastapi .   # docker file name und sagen wo die docker file ist --> . heißt im root, Docker desktop muss gestartet sein damit das funktioniert
+docker image ls
+
+
+
+docker compose #####
+
+#Docker Compose ist ein Tool, mit dem du mehrere Container gleichzeitig konfigurieren und starten kannst.
+#Statt jeden Container manuell zu starten, schreibst du alles in einer YAML-Datei (docker-compose.yml),
+#und Docker Compose baut und startet alles automatisch.
+
+
+docker-compose.yml ---> file erstellen
+
+version: "3"
+services:
+    api:                                                #api ist name des service , ein service ist ein container , ein image ist eine klasse" bauplan" und ein container ist ein objekt davon
+        build: .                                        # baut ein image aus dem dockerfile im root directory
+        ports:
+            - 8000:8000                                             #<port on localhost>:<port on container> , wenn ich eine anfrage an meinen container sende über port 4000 wird er an port 8000 weitergeleitet, hier auf 8000 erstmal lassen
+
+
+
+
+docker-compose up - d    # baut die images und startet container
+docker ps -a             # zeigt alle container an
+
+#docker braucht noch die environment variablen deshalb noch hinzufügen in die YAML
+
+        environment:
+            SECRETKEY: 09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7
+            ALGORITHM: HS256
+            EXPIRE_MIN: 30
+            DB_PASSWORD: david
+            DB_NAME: fastapiDatabase
+            DB_PORT: 5432
+            DB_HOSTNAME: postgres_db
+            DB_USERNAME: postgres
+
+        #oder:
+
+        env_file:
+        - ./.env
+
+docker-compose down
+docker-compose up -d   --> beim zweiten mal wird kein image gebaut
+
+image wird so gebaut: ProjektName_serviceName  --> wenn das image schon mal gebaut wurde wird es nicht nochmal gebaut
+
+bei änderung:
+
+docker-compose up -d --build
+
+
+
+
+# datenbank soll auch in einem container laufen
+
+    postgres_db:                                        # DATABASE_HOSTNAME ENV varible soll gleich heißen wie der service : dann weiß der api container von oben, das er den postgres_db container ansprechen soll udn kennt dann automatisch seine ip adresse
+        image: postgres                        #aus dockerhub
+        environment:
+         POSTGRES_PASSWORD: password123
+         POSTGRES_DB: fastapiDatabase
+
+        volumes:
+            postgr-db:/var/lib/postgresql/data
+
+volumes:
+    postgres-db:
+
+
+
+
+docker exec -it python_fastapi-api-1 bash
+cd app
+
+
+bei code änderung wird unser container nicht geupdatet:
+
+wir müssen unsere projektordner mit den ordnern in dem container synchronisieren
+
+dazu  im service api:
+        volumes:
+            - ./:/usr/src/app:ro                          #ro --> read only der container soll nicht schreiben können
+
+
+in compose file hinzufügen:
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload       # wenn sich was geändert im code hat muss der container neugeladen werden
+
+
+
+
+
+
+
+
+#images auf dockerhub hochladen, wie ein repo auf github für images
+
+create repostory : auf dockerhub
+
+docker image ls --> man sieht die images (wir wollen python_fastapi-api)
+
+
+vorher: docker login
+
+dann: docker image tag python_fastapi-api davids283/fastapi_tut    (umbenenen, in den dockerhub namen)
+
+docker push davids283/fastapi_tut
+
+
+
+
+
+###für production und development nimmt mant 2 verschiedene docker-compose files
+docker-compose down
+
+#docker-compose file kopieren --> rename zu -dev und -prod
+#docker-compose-prod anpassen
+
+docker-compose -f docker-compose-dev.yml up -d # mit -f muss man den dateinamen angeben, weil der nicht mehr standard ist

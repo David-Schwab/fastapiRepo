@@ -1,0 +1,26 @@
+name: Build And Deploy Code
+
+on:                              # wann sollte der Workflow ausgeführt werden
+  push:
+    branches: [ main ]            # man kann mehrere branches angeben, z.B. [ main, develop ]
+  pull_request:                   # für alle branches wäre --> on: [push, pull_request]
+    branches: [ main ]
+
+jobs:                             # die Jobs, die ausgeführt werden sollen
+ job1:
+  runs-on: ubuntu-latest          # Betriebssystem, auf dem der Job ausgeführt wird
+  steps:                          # die Schritte, die in diesem Job ausgeführt werden sollen
+    - name: Checkout code             # Schritt 1: Code aus dem Repository auschecken
+      uses: actions/checkout@v2   # Action, um den Code aus dem Repository zu holen, macht pull repo --> im marketplace ist es checkout@v2 genannt
+    - name: Install python 3.11    # Schritt 2: Python 3.11 installieren
+      uses: actions/setup-python@v2 # Action, um Python zu installieren, im marketplace ist es setup-python@v2 genannt
+      with:
+        python-version: 3.11        # die Version von Python, die installiert werden soll
+    - name: Pip updaten            # Schritt 3: Pip aktualisieren
+      run: python -m pip install --upgrade pip # Befehl, um Pip zu aktualisieren (linux befehl)
+    - name: requirements updatend
+      run: pip freeze > requirements.txt  # Befehl, um die aktuellen Abhängigkeiten in die requirements.txt zu schreiben, damit sie in der pipeline installiert werden können
+    - name: Abhängigkeiten installieren # Schritt 4: Abhängigkeiten installieren
+      run: pip install -r requirements.txt # Befehl, um die Abhängigkeiten
+    - name: Tests ausführen          # Schritt 5: Tests ausführen
+      run: pytest

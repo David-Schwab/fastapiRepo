@@ -1,0 +1,18 @@
+#pytest
+
+pip install pytest
+
+C:\Users\Hallo\Documents\TechSkills\Python_FastAPI>pytest   --> zum starten
+
+#folder test in root dir erstellen
+
+# dort drin my_test.py
+
+#tests müssen so benannt sein test_x.py oder x_test.py
+
+# in test folder --> __init__.py hinzufügen
+mit: pytest --> prüfen
+
+#namen von funktionen im test sind auch wichtig --> genauso test_x
+
+pytest -v # genauer welche test und welche werte

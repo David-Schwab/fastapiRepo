@@ -1,0 +1,60 @@
+# continuous integration --> automatischer prozess zum dev anwendung bauen und testen
+#continuous deployement --> änderungen in die production bringen
+
+
+# aktuell noch ###################
+
+1.Code Änderungen --> 2. commit der änderungen in git --> 3. Tests laufen lassen, um sicherzustellen, das änderungen nichts kaputt gemacht haben
+--> 4. Image bauen (optional) --> 5. deployment  in production umgebung
+
+
+
+# automatisierte ci/cd pipeline ##############
+
+1. code änderunge --> 2. commit (das bleibt manuell)
+# nach commit läuft die ci/cd pipelin, also ci startet --> 1. pull vom code 2. dependencies installieren 3. tests laufen lassen 4. build images
+# nach ci kommt cd --> nimmt entweder neuestes image oder neuesten code, je nachdem was man verwendet --> pusht code in production
+
+
+# ci cd tools ################
+
+# jenkins, github actions  --> wir nutzen github actions
+# ci/cd tool stellt einen "runner" zur verfügung, also eine VM um verschiedene commands laufen zu lassen, die man angibt
+# command sind normalerweise in yaml oder json file konfiguriert
+# die pipelin beziehungsweise der runner starte, sobald ein event passiert (git push/ merge)
+
+# beispiel config #########
+
+steps:                            #Liste von Arbeitsschritten, die in einem Job ausgeführt werden
+    - uses: actions/checkout@v2   #repo klonen auf dem runner
+    - name: Set up python 3.9      # name: nur beschreibung workflow
+      uses: actions/setup-python@v2 #Dieser Step benutzt eine Action, die Python installiert. der runner bekommt damit python, venv und pip
+      with:
+        python-version: "3.9"   # stellt sicher welche python version geladen wird, with ist parameter konfiguration
+    - name: Update pip
+      run: python -m pip install -upgrade pip   # python -m pip garantiert das pip von verwendeter python version verwendet wird
+    - name: install dependencies
+      run: pip install -r requirements.txt
+    - name: Test with Pytest
+      run: |                            # | sagt alles darunter gehört zu einem Shell Script. alles wird nacheinander ausgeführt
+        pip install pytest
+        pytest                         # startet test
+
+
+
+
+
+##  https://github.com/marketplace  --> hier gib es fertige actions
+##  https://github.com/features/actions  --> documentation
+
+
+
+
+
+
+
+
+#########################################################
+
+
+- folder erstellen ---> .github/workflows

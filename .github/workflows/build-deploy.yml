@@ -122,7 +122,8 @@ jobs: # die Jobs, die ausgeführt werden sollen
   #
 
   job2-deploy:
-    runs-on: ubuntu-latest
+    environment: Testing
+    runs-on: self-hosted
     needs: [job1]
     steps:
       - name: Checkout code # ← brauchen wir um die docker-compose.prod.yml zu haben
